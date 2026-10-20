@@ -284,7 +284,7 @@ ip helper-address 10.165.18.205
 
 ### * [ ] **7.** DHCP server device configuration and scope provisioning
 
-![DHCP Pool](Images\DHCP_pool.png)
+![DHCP Pool](Images/DHCP_pool.png)
 
 
 ### * [ ] **8.** OSPF dynamic routing configuration across firewalls, routers, and switches
