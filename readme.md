@@ -270,8 +270,6 @@ ip helper-address 10.165.18.205
 ---
 ### * [x] **6.** Static IP address assignments for DMZ and server farm devices
 
-### * [ ] **7.** DHCP server device configuration and scope provisioning
-
 | Server Role | IP Address |
 | --- | --- |
 | **DHCP Server** | `10.165.18.205` |
@@ -283,6 +281,11 @@ ip helper-address 10.165.18.205
 | **Email Server** | `10.165.18.12` |
 | **App Server** | `10.165.18.13` |
 | **NAS Server** | `10.165.18.14` |
+
+### * [ ] **7.** DHCP server device configuration and scope provisioning
+
+![Images](DHCP_pool.png)
+
 
 ### * [ ] **8.** OSPF dynamic routing configuration across firewalls, routers, and switches
 ### * [ ] **9.** Firewall interface security zones and security levels definition
