@@ -1,0 +1,45 @@
+en
+
+conf t
+
+int range f0/1-2
+sw mode trunk
+exit
+
+vlan 10
+name Management
+vlan 42
+name momcozy
+vlan 48
+name BD
+vlan 36
+name Temp
+vlan 70
+name Voice
+vlan 99
+name Blackhole
+vlan 18
+name Inside-Servers
+vlan 34
+name Admin
+vlan 50
+name WLAN
+
+int range f0/4-5
+sw mode access
+sw access vlan 34
+
+int f0/6
+sw mode access
+sw voice vlan 70
+
+int f0/7
+sw mode access
+sw access vlan 50
+
+int range f0/8-24, g0/1-2
+sw mode access
+sw access vlan 99
+shut
+
+do wr

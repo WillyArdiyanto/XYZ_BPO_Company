@@ -1,0 +1,35 @@
+en
+conf t
+hostname CTM-CS-2
+enable secret Jakarta12345
+
+
+line con 0
+ password Jakarta12345
+ logging synchronous
+ login
+ exec-timeout 3 0
+exit
+
+no ip domain-lookup
+ip domain-name xyz.com
+
+crypto key generate rsa general-keys modulus 1024
+
+ip ssh ver 2
+
+username t1-adm-ardiyanto.6 privilege 15 secret Tele_1234567
+
+banner motd &NO unauthorized access to this network device&
+
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 deny any
+
+
+line vty 0 15
+ access-class 1 in
+ login local
+ transport input ssh
+
+do wr
+
