@@ -288,7 +288,207 @@ ip helper-address 10.165.18.205
 
 
 ### * [ ] **8.** OSPF dynamic routing configuration across firewalls, routers, and switches
+
+#### CTM-CS-1
+```
+en
+
+conf t
+
+router ospf 35
+ router-id <1.1.1.1>
+ network 10.2.2.8 0.0.0.3 area 0
+ network 10.2.2.0 0.0.0.3 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.50.0 0.0.0.255 area 0
+ network 10.165.70.0 0.0.0.255 area 0
+ network 10.165.18.0 0.0.0.127 area 0
+ network 10.165.18.128 0.0.0.127 area 0
+ network 10.165.42.0 0.0.0.255 area 0
+ network 10.165.48.0 0.0.0.255 area 0
+ network 10.165.36.0 0.0.0.255 area 0
+ network 10.165.34.0 0.0.0.255 area 0
+ do wr
+
+```
+
+#### CTM-CS-2
+```
+en
+
+conf t
+
+router ospf 35
+ router-id 2.2.2.2
+ network 10.2.2.4 0.0.0.3 area 0
+ network 10.2.2.12 0.0.0.3 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.50.0 0.0.0.255 area 0
+ network 10.165.70.0 0.0.0.255 area 0
+ network 10.165.18.0 0.0.0.127 area 0
+ network 10.165.18.128 0.0.0.127 area 0
+ network 10.165.42.0 0.0.0.255 area 0
+ network 10.165.48.0 0.0.0.255 area 0
+ network 10.165.36.0 0.0.0.255 area 0
+ network 10.165.34.0 0.0.0.255 area 0
+ do wr
+
+```
+#### NTT ISP router
+
+```
+en
+conf t
+hostname NTT
+router ospf 35
+ router-id 3.3.3.3
+ network 105.100.50.0 0.0.0.3 area 0
+ network 105.100.50.4 0.0.0.3 area 0
+ network 20.20.20.0 0.0.0.3
+ network 20.20.20.0 0.0.0.3 area 0
+ do wr
+```
+
+#### iForte ISP router
+```
+en
+conf t
+hostname iForte
+router ospf 35
+router-id 4.4.4.4
+network 205.200.100.4 0.0.0.3 area 0
+network 205.200.100.0 0.0.0.3 area 0
+network 30.30.30.0 0.0.0.3 area 0
+do wr
+```
+
+#### Router 3
+```
+en
+conf t
+hostname Router3
+router ospf 35
+router-id 5.5.5.5p
+network 20.20.20.0 0.0.0.3 area 0
+network 30.30.30.0 0.0.0.3 area 0
+do wr
+
+```
+
+
 ### * [ ] **9.** Firewall interface security zones and security levels definition
+
+#### CTM-FW-1
+```
+en
+config t
+hostname CTM-FW-1
+
+int gig1/3
+no sh
+ip add 10.2.2.2 255.255.255.252
+nameif INSIDE1-CTM-CS-1
+security-level 100
+
+int gig1/4
+no sh
+ip add 10.2.2.6 255.255.255.252
+nameif INSIDE2-CTM-CS-2
+security-level 100
+
+int gig1/5
+no sh
+ip add 10.165.18.1 255.255.255.128
+nameif DMZ
+security-level 70
+
+int g1/2
+no sh
+ip add 205.200.100.1 255.255.255.252
+nameif OUTSIDE2-iForte
+security-level 0
+
+int g1/1
+no sh
+ip add 105.100.50.1 255.255.255.252
+nameif OUTSIDE1-NTT
+security-level 0
+write mem
+
+```
+#### CTM-FW-2
+```
+en
+conf t
+hostname CTM-FW-2
+
+int g1/3
+no sh
+ip add 10.2.2.10 255.255.255.252
+nameif INSIDE1-CTM-CS-1
+security-level 100
+
+int g1/4
+no sh
+ip add 10.2.2.14 255.255.255.252
+nameif INSIDE2-CTM-CS-2
+security-level 100
+
+int g1/1
+no sh
+ip add 105.100.50.5 255.255.255.252
+nameif OUTSIDE1-NTT
+security-level 0
+
+int g1/2
+no sh
+ip add 205.200.100.5 255.255.255.252
+nameif OUTSIDE2-iForte
+security-level 0
+
+write mem
+
+```
+### * [ ] **9.1** Firewall Static & OSPF routing  
+#### CTM-FW-1
+```
+en
+conf t
+!
+route OUTSIDE1-NTT 0.0.0.0 0.0.0.0 105.100.50.2 1
+route OUTSIDE2-iForte 0.0.0.0 0.0.0.0 205.200.100.2 20
+!
+
+!
+router ospf 35
+ router-id 1.1.2.2
+ network 10.2.2.0 255.255.255.252 area 0
+ network 10.2.2.4 255.255.255.252 area 0
+ network 105.100.50.0 255.255.255.252 area 0
+ network 205.200.100.0 255.255.255.252 area 0
+ network 10.165.18.0 255.255.255.128 area 0
+ write mem
+!
+```
+#### CTM-FW-2
+```
+en
+conf t
+!
+route OUTSIDE1-NTT 0.0.0.0 0.0.0.0 105.100.50.6 1
+route OUTSIDE2-iForte 0.0.0.0 0.0.0.0 205.200.100.6 20
+!
+!
+router ospf 35
+ router-id 1.1.3.3
+ network 205.200.100.4 255.255.255.252 area 0
+ network 105.100.50.4 255.255.255.252 area 0
+ network 10.2.2.8 255.255.255.252 area 0
+ network 10.2.2.12 255.255.255.252 area 0
+!
+write mem
+```
+
 ### * [ ] **10.** Firewall inspection policy and security rules configuration
 ### * [ ] **11.** Wireless network (WLAN) infrastructure configuration
 ### * [ ] **12.** VoIP infrastructure and QoS/VLAN configs
