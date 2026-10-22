@@ -11,7 +11,7 @@ Welcome to the official network architecture and implementation repository for *
 | Category | Network / Subnet Mask | Valid Host Address Range | Default Gateway |
 | --- | --- | --- | --- |
 | **Management** | `192.168.10.0/24` | `192.168.10.1` – `192.168.10.254` | `192.168.10.1` |
-| **WLAN** | `192.168.50.0/23` | `192.168.50.1` – `192.168.51.254` | `192.168.50.1` |
+| **WLAN** | `10.165.50.0/24` | `10.165.50.1` – `10.1658.50.254` | `10.165.50.1` |
 | **VOIP** | `10.165.70.0/24` | `10.165.70.1` – `10.165.70.254` | `10.165.70.1` |
 | **DMZ** | `10.165.18.0/25` | `10.165.18.1` – `10.165.18.126` | `10.165.18.1` |
 | **Inside Servers** | `10.165.18.128/25` | `10.165.18.129` – `10.165.18.254` | `10.165.18.129` |
@@ -62,7 +62,7 @@ Welcome to the official network architecture and implementation repository for *
 | **36** | **TEM** | `10.165.36.3` | `10.165.36.1` |
 | **42** | **MOM** | `10.165.42.3` | `10.165.42.1` |
 | **48** | **TTK** | `10.165.48.3` | `10.165.48.1` |
-| **50** | **WLAN** | `192.168.50.3` | `192.168.50.1` |
+| **50** | **WLAN** | `10.165.50.3` | `10.165.50.1` |
 | **70** | **VOIP** | `10.165.70.3` | `10.165.70.1` |
 
 ### CTM-CS-2 Active/Standby
@@ -74,7 +74,7 @@ Welcome to the official network architecture and implementation repository for *
 | **36** | **TEM** | `10.165.36.2` | `10.165.36.1` |
 | **42** | **MOM** | `10.165.42.2` | `10.165.42.1` |
 | **48** | **TTK** | `10.165.48.2` | `10.165.48.1` |
-| **50** | **WLAN** | `192.168.50.2` | `192.168.50.1` |
+| **50** | **WLAN** | `10.165.50.2` | `10.165.50.1` |
 | **70** | **VOIP** | `10.165.70.2` | `10.165.70.1` |
 
 |
@@ -276,8 +276,8 @@ ip helper-address 10.165.18.205
 | **Primary DNS (DNS)** | `10.165.18.201` |
 | **Secondary DNS (DNS2)** | `10.165.18.202` |
 | **RADIUS Server** | `10.165.18.203` |
-| ** FTP Server** | `10.165.18.10` |
-| ** Web Server** | `10.165.18.11` |
+| **FTP Server** | `10.165.18.10` |
+| **Web Server** | `10.165.18.11` |
 | **Email Server** | `10.165.18.12` |
 | **App Server** | `10.165.18.13` |
 | **NAS Server** | `10.165.18.14` |
@@ -490,6 +490,57 @@ write mem
 ```
 
 ### * [ ] **10.** Firewall inspection policy and security rules configuration
+#### CTM-CS-1
+```
+en
+conf t
+
+object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-WLAN
+subnet 10.165.50.0 255.255.255.0
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+
+object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-WLAN
+subnet 10.165.50.0 255.255.255.0
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+
+object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-WLAN
+subnet 10.165.50.0 255.255.255.0
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+
+object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-WLAN
+subnet 10.165.50.0 255.255.255.0
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+```
+**wip**
+
+int vlan 18
+ip add 10.165.18.130 255.255.255.128
+standby 18 ip 10.165.18.129
+
+int vlan 34
+ip add 10.165.34.2 255.255.255.0
+standby 34 ip 10.165.34.1
+ip helper-address 10.165.18.205
+
+int vlan 36
+ip add 10.165.36.2 255.255.255.0
+standby 36 ip 10.165.36.1
+ip helper-address 10.165.18.205
+
+int vlan 42
+ip add 10.165.42.2 255.255.255.0
+standby 42 ip 10.165.42.1
+ip helper-address 10.165.18.205
+
+int vlan 48
+ip add 10.165.48.2 255.255.255.0
+standby 48 ip 10.165.48.1
+ip helper-address 10.165.18.205
+
+int vlan 50
+ip add 10.165.50.2 255.255.255.0
+
+
 ### * [ ] **11.** Wireless network (WLAN) infrastructure configuration
 ### * [ ] **12.** VoIP infrastructure and QoS/VLAN configs
 ### * [ ] **13.** End-to-end verification and testing of network functionality
