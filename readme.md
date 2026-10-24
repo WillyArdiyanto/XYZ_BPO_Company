@@ -715,36 +715,6 @@ nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
 
 ```
 
-**wip**
-
-int vlan 18
-ip add 10.165.18.130 255.255.255.128
-standby 18 ip 10.165.18.129
-
-int vlan 34
-ip add 10.165.34.2 255.255.255.0
-standby 34 ip 10.165.34.1
-ip helper-address 10.165.18.205
-
-int vlan 36
-ip add 10.165.36.2 255.255.255.0
-standby 36 ip 10.165.36.1
-ip helper-address 10.165.18.205
-
-int vlan 42
-ip add 10.165.42.2 255.255.255.0
-standby 42 ip 10.165.42.1
-ip helper-address 10.165.18.205
-
-int vlan 48
-ip add 10.165.48.2 255.255.255.0
-standby 48 ip 10.165.48.1
-ip helper-address 10.165.18.205
-
-int vlan 50
-ip add 10.165.50.2 255.255.255.0
-
-
 ### * [ ] **11.** Wireless network (WLAN) infrastructure configuration
 ### * [ ] **12.** VoIP infrastructure and QoS/VLAN configs
 ### * [ ] **13.** End-to-end verification and testing of network functionality
