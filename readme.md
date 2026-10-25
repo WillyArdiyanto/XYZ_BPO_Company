@@ -282,12 +282,12 @@ ip helper-address 10.165.18.205
 | **App Server** | `10.165.18.13` |
 | **NAS Server** | `10.165.18.14` |
 
-### * [ ] **7.** DHCP server device configuration and scope provisioning
+### * [x] **7.** DHCP server device configuration and scope provisioning
 
 ![DHCP Pool](Images/DHCP_pool.png)
 
 
-### * [ ] **8.** OSPF dynamic routing configuration across firewalls, routers, and switches
+### * [x] **8.** OSPF dynamic routing configuration across firewalls, routers, and switches
 
 #### CTM-CS-1
 ```
@@ -376,7 +376,7 @@ do wr
 ```
 
 
-### * [ ] **9.** Firewall interface security zones and security levels definition
+### * [x] **9.** Firewall interface security zones and security levels definition
 
 #### CTM-FW-1
 ```
@@ -449,7 +449,7 @@ security-level 0
 write mem
 
 ```
-### * [ ] **9.1** Firewall Static & OSPF routing  
+### * [x] **9.1** Firewall Static & OSPF routing  
 #### CTM-FW-1
 ```
 en
@@ -489,7 +489,7 @@ router ospf 35
 write mem
 ```
 
-### * [ ] **10.** Firewall inspection policy and security rules configuration
+### * [x] **10.** Firewall inspection policy and security rules configuration
 #### CTM-CS-1
 ```
 en
@@ -715,7 +715,61 @@ nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
 
 ```
 
-### * [ ] **11.** Wireless network (WLAN) infrastructure configuration
+#### Inspection Policy
+CTM-FW-1
+```
+!
+access-list RES extended permit icmp any any
+access-list RES extended permit tcp any any eq www
+access-list RES extended permit tcp any any eq domain
+access-list RES extended permit udp any any eq domain
+access-list RES extended permit tcp any any eq 443
+!
+!
+access-group RES in interface DMZ
+access-group RES in interface OUTSIDE1-NTT
+access-group RES in interface OUTSIDE2-iForte
+!
+```
+
+CTM-FW-2
+```
+!
+access-list RES extended permit icmp any any
+access-list RES extended permit tcp any any eq www
+access-list RES extended permit tcp any any eq domain
+access-list RES extended permit udp any any eq domain
+access-list RES extended permit tcp any any eq 443
+!
+!
+access-group RES in interface OUTSIDE1-NTT
+access-group RES in interface OUTSIDE2-iForte
+!
+```
+
+
+### * [x] **11.** Wireless network (WLAN) infrastructure configuration
+
+```
+Add 1 admin computer to connect to WLC
+hostname: IDJOGIT01
+IP address static: 10.165.50.110
+
+reach the WLC address from the computer
+http://10.165.50.10
+```
+![WLC Setup 1](Images/WLC_1_Setup.png)
+
+```
+
+WLC Wireless Network
+SSID: XYZ_Guest
+Sec: WPA 2 Personal
+Pass: XYZ_2026_Q4
+```
+![WLC Setup 2](Images/WLC_2_Employee_SSID.png)
+![WLC Setup 3](Images/WLC_3_Summary.png)
+
 ### * [ ] **12.** VoIP infrastructure and QoS/VLAN configs
 ### * [ ] **13.** End-to-end verification and testing of network functionality
 
