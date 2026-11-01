@@ -90,11 +90,11 @@ Welcome to the official network architecture and implementation repository for *
 en
 conf t
 hostname CTM-CS-2
-enable secret Jakarta12345
+enable secret SecretPassword123
 
 
 line con 0
- password Jakarta12345
+ password SecretPassword123
  logging synchronous
  login
  exec-timeout 3 0
