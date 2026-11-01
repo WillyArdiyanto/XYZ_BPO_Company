@@ -28,12 +28,12 @@ Welcome to the official network architecture and implementation repository for *
 | Connection / Link Description | Network Address |
 | --- | --- |
 | **Cloud Area** | `8.0.0.0/8` |
-| **NTT - Internet** | `20.20.20.0/30` |
-| **iForte - Internet** | `30.30.30.0/31` |
-| **NTT - CTM-FW-1** | `105.100.50.0/30` |
-| **NTT - CTM-FW-2** | `105.100.50.4/30` |
-| **iForte - CTM-FW-1** | `205.200.100.0/30` |
-| **iForte - CTM-FW-2** | `205.200.100.4/30` |
+| **ISP1 - Internet** | `20.20.20.0/30` |
+| **ISP2 - Internet** | `30.30.30.0/31` |
+| **ISP1 - CTM-FW-1** | `105.100.50.0/30` |
+| **ISP1 - CTM-FW-2** | `105.100.50.4/30` |
+| **ISP2 - CTM-FW-1** | `205.200.100.0/30` |
+| **ISP2 - CTM-FW-2** | `205.200.100.4/30` |
 | **CTM-FW-1 to CTM-CS-1** | `10.2.2.0/30` |
 | **CTM-FW-1 to CTM-CS-2** | `10.2.2.4/30` |
 | **CTM-FW-2 to CTM-CS-1** | `10.2.2.8/30` |
@@ -334,12 +334,12 @@ router ospf 35
  do wr
 
 ```
-#### NTT ISP router
+#### ISP1 ISP router
 
 ```
 en
 conf t
-hostname NTT
+hostname ISP1
 router ospf 35
  router-id 3.3.3.3
  network 105.100.50.0 0.0.0.3 area 0
@@ -349,11 +349,11 @@ router ospf 35
  do wr
 ```
 
-#### iForte ISP router
+#### ISP2 ISP router
 ```
 en
 conf t
-hostname iForte
+hostname ISP2
 router ospf 35
 router-id 4.4.4.4
 network 205.200.100.4 0.0.0.3 area 0
@@ -405,13 +405,13 @@ security-level 70
 int g1/2
 no sh
 ip add 205.200.100.1 255.255.255.252
-nameif OUTSIDE2-iForte
+nameif OUTSIDE2-ISP2
 security-level 0
 
 int g1/1
 no sh
 ip add 105.100.50.1 255.255.255.252
-nameif OUTSIDE1-NTT
+nameif OUTSIDE1-ISP1
 security-level 0
 write mem
 
@@ -437,13 +437,13 @@ security-level 100
 int g1/1
 no sh
 ip add 105.100.50.5 255.255.255.252
-nameif OUTSIDE1-NTT
+nameif OUTSIDE1-ISP1
 security-level 0
 
 int g1/2
 no sh
 ip add 205.200.100.5 255.255.255.252
-nameif OUTSIDE2-iForte
+nameif OUTSIDE2-ISP2
 security-level 0
 
 write mem
@@ -455,8 +455,8 @@ write mem
 en
 conf t
 !
-route OUTSIDE1-NTT 0.0.0.0 0.0.0.0 105.100.50.2 1
-route OUTSIDE2-iForte 0.0.0.0 0.0.0.0 205.200.100.2 20
+route OUTSIDE1-ISP1 0.0.0.0 0.0.0.0 105.100.50.2 1
+route OUTSIDE2-ISP2 0.0.0.0 0.0.0.0 205.200.100.2 20
 !
 
 !
@@ -475,8 +475,8 @@ router ospf 35
 en
 conf t
 !
-route OUTSIDE1-NTT 0.0.0.0 0.0.0.0 105.100.50.6 1
-route OUTSIDE2-iForte 0.0.0.0 0.0.0.0 205.200.100.6 20
+route OUTSIDE1-ISP1 0.0.0.0 0.0.0.0 105.100.50.6 1
+route OUTSIDE2-ISP2 0.0.0.0 0.0.0.0 205.200.100.6 20
 !
 !
 router ospf 35
@@ -495,115 +495,115 @@ write mem
 en
 conf t
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-WLAN
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-WLAN
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-WLAN
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-WLAN
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Servers
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Servers
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Servers
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Servers
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Admin
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Admin
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Admin
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Admin
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Tem
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Tem
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Tem
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Tem
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Mom
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Mom
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Mom
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Mom
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-BD
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-BD
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-BD
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-BD
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network DMZ-OUTSIDE1-NTT-BD
+object network DMZ-OUTSIDE1-ISP1-BD
 subnet 10.165.18.0 255.255.255.128
-nat (DMZ,OUTSIDE1-NTT) dynamic interface
+nat (DMZ,OUTSIDE1-ISP1) dynamic interface
 
-object network DMZ-OUTSIDE2-iForte-BD
+object network DMZ-OUTSIDE2-ISP2-BD
 subnet 10.165.18.0 255.255.255.128
-nat (DMZ,OUTSIDE2-iForte) dynamic interface
+nat (DMZ,OUTSIDE2-ISP2) dynamic interface
 !
 ```
 #### CTM-FW-2
@@ -611,106 +611,106 @@ nat (DMZ,OUTSIDE2-iForte) dynamic interface
 en
 conf t
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-WLAN
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-WLAN
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-WLAN
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-WLAN
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-WLAN
 subnet 10.165.50.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Servers
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Servers
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Servers
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Servers
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Servers
 subnet 10.165.18.128 255.255.255.128
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Admin
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Admin
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Admin
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Admin
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Admin
 subnet 10.165.34.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Tem
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Tem
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Tem
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Tem
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Tem
 subnet 10.165.36.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-Mom
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-Mom
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-Mom
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-Mom
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-Mom
 subnet 10.165.42.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 !
-object network INSIDE1-CTM-CS-1-OUTSIDE1-NTT-BD
+object network INSIDE1-CTM-CS-1-OUTSIDE1-ISP1-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE1-CTM-CS-1-OUTSIDE2-iForte-BD
+object network INSIDE1-CTM-CS-1-OUTSIDE2-ISP2-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE1-CTM-CS-1,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE1-CTM-CS-1,OUTSIDE2-ISP2) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE1-NTT-BD
+object network INSIDE2-CTM-CS-2-OUTSIDE1-ISP1-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE1-NTT) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE1-ISP1) dynamic interface
 
-object network INSIDE2-CTM-CS-2-OUTSIDE2-iForte-BD
+object network INSIDE2-CTM-CS-2-OUTSIDE2-ISP2-BD
 subnet 10.165.48.0 255.255.255.0
-nat (INSIDE2-CTM-CS-2,OUTSIDE2-iForte) dynamic interface
+nat (INSIDE2-CTM-CS-2,OUTSIDE2-ISP2) dynamic interface
 !
 
 ```
@@ -727,8 +727,8 @@ access-list RES extended permit tcp any any eq 443
 !
 !
 access-group RES in interface DMZ
-access-group RES in interface OUTSIDE1-NTT
-access-group RES in interface OUTSIDE2-iForte
+access-group RES in interface OUTSIDE1-ISP1
+access-group RES in interface OUTSIDE2-ISP2
 !
 ```
 
@@ -742,8 +742,8 @@ access-list RES extended permit udp any any eq domain
 access-list RES extended permit tcp any any eq 443
 !
 !
-access-group RES in interface OUTSIDE1-NTT
-access-group RES in interface OUTSIDE2-iForte
+access-group RES in interface OUTSIDE1-ISP1
+access-group RES in interface OUTSIDE2-ISP2
 !
 ```
 
