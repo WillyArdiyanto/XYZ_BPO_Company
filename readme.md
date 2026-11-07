@@ -774,3 +774,129 @@ Pass: XYZ_2026_Q4
 ### * [ ] **13.** End-to-end verification and testing of network functionality
 
 ---
+
+# Testing
+## Failover test
+### 1.Methodology 
+```
+CTM-CS-1# reload
+```
+
+### Findings
+1. HSRP not working
+2. STP is not rapid
+
+### Resolution
+1. Add IP cef on both core switch
+```
+! Enable Cisco Express Forwarding to fix the routing hardware table
+ip cef
+```
+2. Config HSRP Preempt & Priorities
+ Neither switch is configured with standby X preempt. Without this, if CTM-CS-2 reloads and comes back online, it cannot reclaim the "Active" role even if it has a higher priority or is meant to be primary.
+
+#### CTM-CS-1
+```
+! Enable Cisco Express Forwarding to fix the routing hardware table
+ip cef
+
+! Configure HSRP Priorities and Preempt on CTM-CS-1
+interface Vlan10
+ standby 10 priority 105
+ standby 10 preempt
+!
+interface Vlan18
+ standby 18 priority 105
+ standby 18 preempt
+!
+interface Vlan34
+ standby 34 priority 105
+ standby 34 preempt
+!
+interface Vlan36
+ standby 36 priority 105
+ standby 36 preempt
+!
+interface Vlan42
+ standby 42 priority 105
+ standby 42 preempt
+!
+interface Vlan48
+ standby 48 priority 105
+ standby 48 preempt
+!
+interface Vlan50
+ standby 50 priority 105
+ standby 50 preempt
+```
+#### CTM-CS-2
+```
+! Configure HSRP Priorities and Preempt on CTM-CS-2
+interface Vlan10
+ standby 10 priority 110
+ standby 10 preempt
+!
+interface Vlan18
+ standby 18 priority 110
+ standby 18 preempt
+!
+interface Vlan34
+ standby 34 priority 110
+ standby 34 preempt
+!
+interface Vlan36
+ standby 36 priority 110
+ standby 36 preempt
+!
+interface Vlan42
+ standby 42 priority 110
+ standby 42 preempt
+!
+interface Vlan48
+ standby 48 priority 110
+ standby 48 preempt
+!
+interface Vlan50
+ standby 50 priority 110
+ standby 50 preempt
+
+```
+3. Spanning Tree Blocking
+
+3.1. Define Spanning Tree Primary & Secondary Roots
+Right now, the switches are left at default STP priorities. If CS2 goes down, CS1 takes too long to realize it should become the STP root.
+#### CTM-CS-1 
+```
+CTM-CS-1(config)# spanning-tree vlan 10,18,34,36,42,48,50 root secondary
+```
+#### CTM-CS-2
+```
+CTM-CS-2(config)# spanning-tree vlan 10,18,34,36,42,48,50 root primary
+```
+
+This modifies the STP bridge priorities so that they match your HSRP layout flawlessly.
+
+3.2. Switch Spanning Tree Mode to Rapid-PVST (Crucial)
+
+Your current configuration shows spanning-tree mode pvst. Standard PVST is incredibly slow (takes 30–50 seconds to turn green). You need to change both switches to Rapid PVST, which forces amber ports to turn green in less than 2 seconds.
+
+#### BOTH CTM-CS-1 and CTM-CS-2:
+```
+CTM-CS-1(config)# spanning-tree mode rapid-pvst
+CTM-CS-2(config)# spanning-tree mode rapid-pvst
+```
+
+3.3. Verify the EtherChannel Port-Channel Link
+
+Ensure Packet Tracer isn't glitching out on the EtherChannel bundle. On both switches, check that the Port-channel is successfully grouped:
+
+```
+CTM-CS-1# show etherchannel summary
+```
+
+If the ports under Po10 don't show (P) (meaning "bundled in port-channel"), the cross-link will remain broken or blocked by STP. If it looks broken, re-apply the trunk lines cleanly:
+```
+interface Port-channel10
+ switchport mode trunk
+ switchport trunk allowed vlan all
+```
