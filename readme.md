@@ -900,3 +900,14 @@ interface Port-channel10
  switchport mode trunk
  switchport trunk allowed vlan all
 ```
+
+### Changes 11/14/2026
+```
+! On CTM-CS-2 (HSRP Active - Priority 110)
+CTM-CS-2(config)# spanning-tree vlan 42 root primary
+
+! On CTM-CS-1 (HSRP Standby - Priority 105)
+CTM-CS-1(config)# spanning-tree vlan 42 root secondary
+
+```
+* I don't know if it's making difference or not
